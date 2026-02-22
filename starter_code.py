@@ -14,95 +14,97 @@ import tracemalloc
 # ============================================================================
 
 def bubble_sort(arr):
-    """
-    Sort array using bubble sort algorithm.
-    
-    Bubble sort repeatedly steps through the list, compares adjacent elements,
-    and swaps them if they're in the wrong order.
-    
-    Args:
-        arr (list): List of integers to sort
-    
-    Returns:
-        list: Sorted list in ascending order
-    
-    Example:
-        bubble_sort([64, 34, 25, 12, 22, 11, 90]) returns [11, 12, 22, 25, 34, 64, 90]
-    """
-    # TODO: Implement bubble sort
-    # Hint: Use nested loops - outer loop for passes, inner loop for comparisons
-    # Hint: Compare adjacent elements and swap if left > right
-    
-    pass  # Delete this and write your code
+
+    arr_copy = arr.copy()
+    for i in range(len(arr_copy)):
+       
+        swapped = False
+
+        for j in range(0,len(arr_copy)-i-1):
+
+            if arr_copy[j] > arr_copy[j+ 1]:
+
+                temp = arr_copy[j]
+                arr_copy[j] = arr_copy[j + 1]
+                arr_copy[j+1]=temp
+
+                swapped = True
+            
+        if not swapped:
+            break
+
+    return arr_copy
 
 
 def selection_sort(arr):
-    """
-    Sort array using selection sort algorithm.
-    
-    Selection sort divides the list into sorted and unsorted regions, repeatedly
-    selecting the minimum element from unsorted region and moving it to sorted region.
-    
-    Args:
-        arr (list): List of integers to sort
-    
-    Returns:
-        list: Sorted list in ascending order
-    
-    Example:
-        selection_sort([64, 34, 25, 12, 22, 11, 90]) returns [11, 12, 22, 25, 34, 64, 90]
-    """
-    # TODO: Implement selection sort
-    # Hint: Find minimum element in unsorted portion, swap it with first unsorted element
-    
-    pass  # Delete this and write your code
+
+    arr_copy = arr.copy()
+    for step in range(len(arr_copy)):
+        min = step
+
+        for i in range(step + 1, len(arr_copy)):
+            if  arr_copy[i] <  arr_copy[min]:
+                min = i
+        
+        ( arr_copy[step],  arr_copy[min]) = ( arr_copy[min],  arr_copy[step])
+    return arr_copy
 
 
 def insertion_sort(arr):
-    """
-    Sort array using insertion sort algorithm.
-    
-    Insertion sort builds the final sorted array one item at a time, inserting
-    each element into its proper position in the already-sorted portion.
-    
-    Args:
-        arr (list): List of integers to sort
-    
-    Returns:
-        list: Sorted list in ascending order
-    
-    Example:
-        insertion_sort([64, 34, 25, 12, 22, 11, 90]) returns [11, 12, 22, 25, 34, 64, 90]
-    """
-    # TODO: Implement insertion sort
-    # Hint: Start from second element, insert it into correct position in sorted portion
-    
-    pass  # Delete this and write your code
+    arr_copy = arr.copy()
+    for step in range(1, len(arr_copy)):
+        key = arr_copy[step]
+        j = step - 1
 
+        while j >= 0 and key < arr_copy[j]:
+            arr_copy[j+ 1] = arr_copy[j]
+            j = j -1
+
+        arr_copy[j + 1] = key
+    
+    return arr_copy
+
+        
 
 def merge_sort(arr):
-    """
-    Sort array using merge sort algorithm.
-    
-    Merge sort is a divide-and-conquer algorithm that divides the array into halves,
-    recursively sorts them, and then merges the sorted halves.
-    
-    Args:
-        arr (list): List of integers to sort
-    
-    Returns:
-        list: Sorted list in ascending order
-    
-    Example:
-        merge_sort([64, 34, 25, 12, 22, 11, 90]) returns [11, 12, 22, 25, 34, 64, 90]
-    """
-    # TODO: Implement merge sort
-    # Hint: Base case - if array has 1 or 0 elements, it's already sorted
-    # Hint: Recursive case - split array in half, sort each half, merge sorted halves
-    # Hint: You'll need a helper function to merge two sorted arrays
-    
-    pass  # Delete this and write your code
+    arr_copy = arr.copy()
 
+    # Base case
+    if len(arr_copy) <= 1:
+        return arr_copy
+
+    r = len(arr_copy) // 2
+    L = arr_copy[:r]
+    M = arr_copy[r:]
+
+ 
+    L = merge_sort(L)
+    M = merge_sort(M)
+
+    i = j = k = 0
+
+    # Merge
+    while i < len(L) and j < len(M):
+        if L[i] < M[j]:
+            arr_copy[k] = L[i]
+            i += 1
+        else:
+            arr_copy[k] = M[j]
+            j += 1
+        k += 1
+
+    # Remaining elements
+    while i < len(L):
+        arr_copy[k] = L[i]
+        i += 1
+        k += 1
+
+    while j < len(M):
+        arr_copy[k] = M[j]
+        j += 1
+        k += 1
+
+    return arr_copy
 
 # ============================================================================
 # PART 2: STABILITY DEMONSTRATION
@@ -282,13 +284,6 @@ def analyze_stability():
 
 
 if __name__ == "__main__":
-    print("SORTING ASSIGNMENT - STARTER CODE")
-    print("Implement the sorting functions above, then run tests.\n")
-    
-    # Uncomment these as you complete each part:
-    
-    # test_sorting_correctness()
-    # benchmark_all_datasets()
-    # analyze_stability()
-    
-    print("\n⚠ Uncomment the test functions in the main block to run benchmarks!")
+    test_sorting_correctness()
+    benchmark_all_datasets()
+    analyze_stability()
