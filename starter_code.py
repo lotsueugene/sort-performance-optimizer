@@ -13,6 +13,8 @@ import tracemalloc
 # PART 1: SORTING IMPLEMENTATIONS
 # ============================================================================
 
+
+# Comparison-based sort with adjacent element swapping
 def bubble_sort(arr):
 
     arr_copy = arr.copy()
@@ -35,7 +37,7 @@ def bubble_sort(arr):
 
     return arr_copy
 
-
+# Sort that repeatedly finds minimum element
 def selection_sort(arr):
 
     arr_copy = arr.copy()
@@ -49,7 +51,7 @@ def selection_sort(arr):
         ( arr_copy[step],  arr_copy[min]) = ( arr_copy[min],  arr_copy[step])
     return arr_copy
 
-
+#  Sort that builds sorted array one element at a time
 def insertion_sort(arr):
     arr_copy = arr.copy()
     for step in range(1, len(arr_copy)):
@@ -65,11 +67,11 @@ def insertion_sort(arr):
     return arr_copy
 
         
-
+# Divide-and-conquer sort with merging
 def merge_sort(arr):
     arr_copy = arr.copy()
 
-    # Base case
+   
     if len(arr_copy) <= 1:
         return arr_copy
 
@@ -83,7 +85,7 @@ def merge_sort(arr):
 
     i = j = k = 0
 
-    # Merge
+    
     while i < len(L) and j < len(M):
         if L[i] < M[j]:
             arr_copy[k] = L[i]
@@ -93,7 +95,7 @@ def merge_sort(arr):
             j += 1
         k += 1
 
-    # Remaining elements
+    
     while i < len(L):
         arr_copy[k] = L[i]
         i += 1
@@ -111,16 +113,6 @@ def merge_sort(arr):
 # ============================================================================
 
 def demonstrate_stability():
-    """
-    Demonstrate which sorting algorithms are stable by sorting products by price.
-    
-    Creates a list of product dictionaries with prices and original order.
-    Sorts by price and checks if products with same price maintain original order.
-    
-    Returns:
-        dict: Results showing which algorithms preserved order for equal elements
-    """
-    # Sample products with duplicate prices
     products = [
         {"name": "Widget A", "price": 1999, "original_position": 0},
         {"name": "Gadget B", "price": 999, "original_position": 1},
@@ -128,24 +120,81 @@ def demonstrate_stability():
         {"name": "Tool D", "price": 999, "original_position": 3},
         {"name": "Widget E", "price": 1999, "original_position": 4},
     ]
-    
-    # TODO: Sort products by price using each algorithm
-    # Hint: You'll need to modify your sorting functions to work with dictionaries
-    # Hint: Or extract prices, sort them, and check if stable algorithms maintain original order
-    # Hint: For stable sort: items with price 999 should stay in order (B before D)
-    # Hint: For stable sort: items with price 1999 should stay in order (A before C before E)
-    
+
     results = {
         "bubble_sort": "Not tested",
-        "selection_sort": "Not tested", 
+        "selection_sort": "Not tested",
         "insertion_sort": "Not tested",
-        "merge_sort": "Not tested"
+        "merge_sort": "Not tested",
     }
-    
-    # TODO: Test each algorithm and update results dictionary with "Stable" or "Unstable"
-    
-    return results
 
+    def is_stable(sorted_products):
+        if not (sorted_products[0]["original_position"] == 1 and
+                sorted_products[1]["original_position"] == 3):
+            return "Unstable"
+        if not (sorted_products[2]["original_position"] == 0 and
+                sorted_products[3]["original_position"] == 2 and
+                sorted_products[4]["original_position"] == 4):
+            return "Unstable"
+        return "Stable"
+
+    # Bubble Sort
+    arr = [product.copy() for product in products]
+    for i in range(len(arr)):
+        swapped = False
+        for j in range(0, len(arr) - i - 1):
+            if arr[j]["price"] > arr[j + 1]["price"]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+    results["bubble_sort"] = is_stable(arr)
+
+    # Selection Sort
+    arr = [product.copy() for product in products]
+    for step in range(len(arr)):
+        min_idx = step
+        for i in range(step + 1, len(arr)):
+            if arr[i]["price"] < arr[min_idx]["price"]:
+                min_idx = i
+        arr[step], arr[min_idx] = arr[min_idx], arr[step]
+    results["selection_sort"] = is_stable(arr)
+
+    # Insertion Sort
+    arr = [product.copy() for product in products]
+    for step in range(1, len(arr)):
+        key = arr[step]
+        j = step - 1
+        while j >= 0 and key["price"] < arr[j]["price"]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    results["insertion_sort"] = is_stable(arr)
+
+    # Merge Sort
+    def merge_sort_products(arr):
+        if len(arr) <= 1:
+            return arr
+        mid = len(arr) // 2
+        L = merge_sort_products(arr[:mid])
+        R = merge_sort_products(arr[mid:])
+        result = []
+        i = j = 0
+        while i < len(L) and j < len(R):
+            if L[i]["price"] <= R[j]["price"]:
+                result.append(L[i])
+                i += 1
+            else:
+                result.append(R[j])
+                j += 1
+        result.extend(L[i:])
+        result.extend(R[j:])
+        return result
+
+    arr = merge_sort_products([product.copy() for product in products])
+    results["merge_sort"] = is_stable(arr)
+
+    return results
 
 # ============================================================================
 # PART 3: PERFORMANCE BENCHMARKING
